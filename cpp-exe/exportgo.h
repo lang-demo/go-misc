@@ -80,9 +80,7 @@ typedef struct { void *data; GoInt len; GoInt cap; } GoSlice;
 extern "C" {
 #endif
 
-extern __declspec(dllexport) GoUintptr Call(GoUintptr _namePtr, GoUintptr _jsonPtr);
 extern __declspec(dllexport) GoUintptr __ThisPath__();
-extern __declspec(dllexport) GoUintptr add2(GoUintptr _json);
 extern __declspec(dllexport) GoInt32 GetIntFromDLL();
 extern __declspec(dllexport) GoString GetStringFromDLL();
 extern __declspec(dllexport) void PrintHello(GoString name);

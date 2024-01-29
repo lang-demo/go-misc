@@ -25,11 +25,11 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/lang-library/go-global"
 	"github.com/lang-library/go-winlib"
 	"golang.org/x/sys/windows"
 )
 
+/*
 type User struct {
 	NickName string
 	Age      int32
@@ -63,6 +63,7 @@ var (
 func init() {
 	funcTable["add2"] = add2_impl
 }
+*/
 
 // https://stackoverflow.com/questions/71587996/cannot-use-type-assertion-on-type-parameter-value
 func isInt[T any](x T) (ok bool) {
@@ -71,66 +72,10 @@ func isInt[T any](x T) (ok bool) {
 	return
 }
 
-//export Call
-func Call(_namePtr, _jsonPtr uintptr) uintptr {
-	_name := winlib.UTF8AddrToString(_namePtr)
-	global.Echo(_name, "_name")
-	if funcTable[_name] == nil {
-		return winlib.StringToUTF8Addr("null")
-	}
-	/*
-		global.Echo(ptv.NumMethod(), "tv.NumMethod()")
-		if _method, _found = tv.MethodByName(_name); !_found {
-			global.Echo(_method, "_method")
-			global.Echo(_found, "_found")
-			return winlib.StringToUTF8Addr("null")
-		}
-	*/
-	global.Echo("method found!")
-	global.Echo(_jsonPtr, "_jsonPtr")
-	_json := winlib.UTF8AddrToString(_jsonPtr)
-	_input := global.FromJson(_json)
-	global.Print(_input, "_input")
-	_answer := funcTable["add2"](_input)
-	global.Print(_answer, "_answer")
-	_output := global.ToPrettyJson(_answer)
-	global.Echo(_output, "_output")
-	return winlib.StringToUTF8Addr(_output)
-}
-
 //export __ThisPath__
 func __ThisPath__() uintptr {
 	s := winlib.GetModuleFileName((windows.Handle)(unsafe.Pointer(&C.__ImageBase)))
 	return winlib.StringToUTF8Addr(s)
-}
-
-//export add2
-func add2(_json uintptr) uintptr {
-	global.Echo(_json, "_json")
-	_input := global.FromJson(winlib.UTF8AddrToString(_json))
-	global.Print(_input, "_input")
-	_map := _input.(map[string]any)
-	global.Echo(_map, "_map")
-	_args := _map["args"]
-	global.Print(_args, "_args")
-	//_answer := add2_impl(_args)
-	_answer := funcTable["add2"](_args)
-	global.Print(_answer, "_answer")
-	_map["result"] = _answer
-	global.Echo(_map, "_map(2)")
-	_output := global.ToPrettyJson(_map)
-	global.Echo(_output, "_output")
-	return winlib.StringToUTF8Addr(_output)
-}
-
-func add2_impl(_args any) any {
-	global.Print(_args, "_args")
-	_argsAsArray := _args.([]any)
-	global.Print(_argsAsArray[0], "[0]")
-	global.Print(_argsAsArray[1], "[1]")
-	_answer := _argsAsArray[0].(float64) + _argsAsArray[1].(float64)
-	global.Print(_answer, "_answer")
-	return []any{_answer}
 }
 
 //export GetIntFromDLL
